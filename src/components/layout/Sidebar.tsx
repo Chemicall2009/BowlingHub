@@ -9,6 +9,7 @@ import {
   ChevronLeft,
   ChevronRight,
   Disc3,
+  MonitorPlay,
 } from "lucide-react";
 import { useUIStore } from "../../stores/ui";
 import { cn } from "../../lib/utils";
@@ -34,6 +35,12 @@ const NAV_ITEMS = [
     to: "/sniffer",
     label: "Сниффер LCom",
     icon: Radio,
+  },
+  {
+    to: "/tv/1",
+    label: "TV-панель",
+    icon: MonitorPlay,
+    external: true,
   },
   {
     to: "/logs",
@@ -96,6 +103,24 @@ export function Sidebar() {
       <nav className="flex-1 space-y-1.5 p-3 overflow-y-auto">
         {NAV_ITEMS.map((item) => {
           const Icon = item.icon;
+          if (item.external) {
+            return (
+              <a
+                key={item.to}
+                href={item.to}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={cn(
+                  "flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-colors select-none text-zinc-400 hover:bg-zinc-900 hover:text-zinc-100",
+                  !sidebarOpen && "justify-center px-2"
+                )}
+                title={!sidebarOpen ? item.label : undefined}
+              >
+                <Icon className="h-5 w-5 shrink-0 text-teal-400" />
+                {sidebarOpen && <span>{item.label}</span>}
+              </a>
+            );
+          }
           return (
             <NavLink
               key={item.to}

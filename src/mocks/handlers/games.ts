@@ -21,6 +21,8 @@ export type MockGame = {
   score: number;
   status: "active" | "completed";
   started_at: string;
+  current_player_index?: number;
+  current_frame?: number;
 };
 
 function createInitialFrames(existing: Partial<FrameScore>[] = []): FrameScore[] {
@@ -37,7 +39,7 @@ function createInitialFrames(existing: Partial<FrameScore>[] = []): FrameScore[]
 }
 
 // In-memory хранилище активных игр с полными структурами игроков и 10 фреймов
-const gamesStore: Map<string, MockGame> = new Map([
+export const gamesStore: Map<string, MockGame> = new Map([
   [
     "game-lane-6",
     {
@@ -189,6 +191,8 @@ export const gameHandlers = [
       players: playerScores,
       current_player: mainPlayer,
       frame: 1,
+      current_frame: 1,
+      current_player_index: 0,
       score: 0,
       status: "active",
       started_at: new Date().toISOString(),
@@ -209,7 +213,7 @@ export const gameHandlers = [
         id: gameId,
         player_name: mainPlayer,
         score: 0,
-        frame: 1,
+        current_frame: 1,
       },
       shots: [],
       last_seen_at: new Date().toISOString(),
@@ -336,7 +340,7 @@ export const gameHandlers = [
           id: game.id,
           player_name: game.current_player,
           score: game.score,
-          frame: game.frame,
+          current_frame: game.frame,
         },
         shots: updatedShots,
         last_seen_at: new Date().toISOString(),

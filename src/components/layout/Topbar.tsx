@@ -6,12 +6,73 @@ import {
   Menu,
   Activity,
   Terminal,
+  FlaskConical,
+  Zap,
 } from "lucide-react";
 import { Button } from "../ui/button";
 import { Badge } from "../ui/badge";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "../ui/tooltip";
 import { useUIStore } from "../../stores/ui";
 import { useConnectionStore } from "../../stores/connection";
+import { ModeSwitcher } from "../common/ModeSwitcher";
+import { TvPanelSelectorModal } from "../common/TvPanelSelectorModal";
+import { useOperationMode } from "../../stores/operationMode";
+import { useEmulationStatus } from "../../api/emulation";
+import { cn } from "../../lib/utils";
+
+function EmulationIndicator() {
+  const mode = useOperationMode((s) => s.mode);
+  const { data } = useEmulationStatus();
+  const activeCount = Array.isArray(data?.active_lanes) ? data.active_lanes.length : 0;
+  if (mode !== "emulation" || activeCount === 0) {
+    return null;
+  }
+  return (
+    <Tooltip>
+      <TooltipTrigger asChild>
+        <div className="flex items-center gap-1.5 px-2 py-1 rounded-md text-xs font-mono bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 animate-pulse">
+          <Activity className="h-3.5 w-3.5" />
+          SIM {activeCount}
+        </div>
+      </TooltipTrigger>
+      <TooltipContent>
+        Активно симулируется {activeCount} дорожек
+      </TooltipContent>
+    </Tooltip>
+  );
+}
+
+function ModeBadge() {
+  const mode = useOperationMode((s) => s.mode);
+  const isEmu = mode === "emulation";
+
+  return (
+    <Tooltip>
+      <TooltipTrigger asChild>
+        <div
+          className={cn(
+            "flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-mono font-semibold uppercase tracking-wider cursor-pointer",
+            isEmu
+              ? "bg-amber-500/15 text-amber-400 border border-amber-500/30"
+              : "bg-emerald-500/15 text-emerald-400 border border-emerald-500/30"
+          )}
+        >
+          {isEmu ? (
+            <FlaskConical className="h-3.5 w-3.5" />
+          ) : (
+            <Zap className="h-3.5 w-3.5" />
+          )}
+          {isEmu ? "EMU" : "LIVE"}
+        </div>
+      </TooltipTrigger>
+      <TooltipContent side="bottom">
+        {isEmu
+          ? "Режим эмуляции — оборудование виртуальное, данные не влияют на реальные дорожки"
+          : "Боевой режим — работа с реальным оборудованием"}
+      </TooltipContent>
+    </Tooltip>
+  );
+}
 
 export function Topbar() {
   const navigate = useNavigate();
@@ -49,10 +110,21 @@ export function Topbar() {
             {lastPingMs} ms • {rxPacketsSec} pkt/s
           </span>
         </div>
+
+        <TooltipProvider>
+          <ModeBadge />
+          <EmulationIndicator />
+        </TooltipProvider>
       </div>
 
       {/* Right: Quick actions */}
       <div className="flex items-center gap-2">
+        {/* Mode Switcher */}
+        <ModeSwitcher />
+
+        {/* TV Panel Selector */}
+        <TvPanelSelectorModal />
+
         <TooltipProvider>
           {/* Hardware Bus status badge */}
           <Badge

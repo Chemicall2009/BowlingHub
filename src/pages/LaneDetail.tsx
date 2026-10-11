@@ -13,17 +13,21 @@ import {
   Copy,
   Check,
   CheckCircle2,
-  Plus,
-  Trash2,
+  MonitorPlay,
+  PlayCircle,
 } from "lucide-react";
 import { toast } from "sonner";
+import { useOperationMode } from "../stores/operationMode";
+import { useThrowNow } from "../api/emulation";
 import { getLaneById, resetLane, updateLanePins, addShotToLane } from "../api/lanes";
 import { getGame, createGame, newFrame } from "../api/games";
 import { PinTriangle } from "../components/lane/PinTriangle";
 import { LaneStatusBadge } from "../components/lane/LaneStatusBadge";
 import { LaneOptionsPanel } from "../components/lane/LaneOptionsPanel";
 import { ShotTimeline } from "../components/lane/ShotTimeline";
+import { StartGameDialog } from "../components/lane/StartGameDialog";
 import { ScoreBoard } from "../components/score/ScoreBoard";
+import { LaneThrowButton } from "../components/emulation/LaneThrowButton";
 import { Button } from "../components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "../components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../components/ui/tabs";
@@ -50,10 +54,12 @@ export function LaneDetail() {
   const queryClient = useQueryClient();
   const laneId = Number(id) || 1;
 
+  const mode = useOperationMode((s) => s.mode);
+  const throwNow = useThrowNow();
+
   const [copiedJson, setCopiedJson] = useState(false);
   const [resetDialogOpen, setResetDialogOpen] = useState(false);
   const [startGameDialogOpen, setStartGameDialogOpen] = useState(false);
-  const [playerNames, setPlayerNames] = useState<string[]>(["Игрок 1"]);
   const [operatorNotes, setOperatorNotes] = useState<string>(() => {
     return localStorage.getItem(`bowland_notes_lane_${laneId}`) || "";
   });
@@ -97,23 +103,6 @@ export function LaneDetail() {
       refetchGame();
     },
     onError: () => toast.error("Ошибка переключения фрейма"),
-  });
-
-  // Start Game mutation
-  const startGameMutation = useMutation({
-    mutationFn: (players: string[]) =>
-      createGame({
-        lane_id: laneId,
-        players: players.filter((p) => p.trim().length > 0),
-      }),
-    onSuccess: () => {
-      toast.success("Новая игра запущена");
-      setStartGameDialogOpen(false);
-      queryClient.invalidateQueries({ queryKey: ["lane", laneId] });
-      queryClient.invalidateQueries({ queryKey: ["lanes"] });
-      refetchGame();
-    },
-    onError: () => toast.error("Ошибка создания игры"),
   });
 
   // Toggle single pin interactive mode
@@ -160,7 +149,7 @@ export function LaneDetail() {
 
     try {
       await addShotToLane(laneId, {
-        frame: lane.current_game?.frame || 1,
+        frame: lane.current_game?.current_frame || 1,
         shot: 1,
         pins_down: knocked,
         pins_state: lane.pins,
@@ -262,6 +251,30 @@ export function LaneDetail() {
 
         {/* Action Buttons */}
         <div className="flex items-center gap-2 flex-wrap">
+          {mode === "emulation" && (
+            <Button
+              variant="secondary"
+              size="sm"
+              onClick={() => throwNow.mutate(laneId)}
+              disabled={throwNow.isPending}
+              className="text-xs bg-amber-950/40 border border-amber-600/40 text-amber-300 hover:bg-amber-900/50 hover:text-white"
+            >
+              <PlayCircle className="h-3.5 w-3.5 mr-1.5 text-amber-400" />
+              Симулировать бросок
+            </Button>
+          )}
+
+          {/* Open TV button */}
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => window.open(`/tv/${laneId}`, "_blank")}
+            className="text-xs border-teal-800/80 bg-teal-950/30 text-teal-300 hover:bg-teal-900/40 hover:text-white"
+          >
+            <MonitorPlay className="w-3.5 h-3.5 text-teal-400" />
+            Открыть TV
+          </Button>
+
           {/* Reset button */}
           <Button
             variant="outline"
@@ -284,6 +297,8 @@ export function LaneDetail() {
             <SkipForward className="w-3.5 h-3.5 text-sky-400" />
             Новый фрейм
           </Button>
+
+          <LaneThrowButton laneId={lane.id} />
 
           {/* Start Game button */}
           <Button
@@ -313,7 +328,7 @@ export function LaneDetail() {
               ]
             : [])
         }
-        currentFrame={lane.current_game?.frame || activeGame?.current_frame || 1}
+        currentFrame={lane.current_game?.current_frame || activeGame?.current_frame || 1}
       />
 
       {/* 3 & 4. Two-Column Operational Section */}
@@ -544,72 +559,11 @@ export function LaneDetail() {
       />
 
       {/* Start Game Modal */}
-      <Dialog open={startGameDialogOpen} onOpenChange={setStartGameDialogOpen}>
-        <DialogContent className="sm:max-w-[440px]">
-          <DialogHeader>
-            <DialogTitle>Начать новую игру на дорожке #{lane.number}</DialogTitle>
-            <DialogDescription>
-              Введите имена участников. Будет сгенерирована таблица 10 фреймов.
-            </DialogDescription>
-          </DialogHeader>
-
-          <div className="space-y-3 py-3">
-            {playerNames.map((name, index) => (
-              <div key={index} className="flex items-center gap-2">
-                <Input
-                  value={name}
-                  placeholder={`Игрок ${index + 1}`}
-                  onChange={(e) => {
-                    const updated = [...playerNames];
-                    updated[index] = e.target.value;
-                    setPlayerNames(updated);
-                  }}
-                  className="text-sm"
-                />
-                {playerNames.length > 1 && (
-                  <Button
-                    variant="ghost"
-                    size="iconSm"
-                    onClick={() => {
-                      setPlayerNames(playerNames.filter((_, i) => i !== index));
-                    }}
-                    className="text-red-400 hover:text-red-300"
-                  >
-                    <Trash2 className="w-4 h-4" />
-                  </Button>
-                )}
-              </div>
-            ))}
-
-            {playerNames.length < 6 && (
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setPlayerNames([...playerNames, `Игрок ${playerNames.length + 1}`])}
-                className="w-full text-xs mt-2"
-              >
-                <Plus className="w-3.5 h-3.5" /> Добавить игрока
-              </Button>
-            )}
-          </div>
-
-          <DialogFooter className="mt-2">
-            <Button
-              variant="outline"
-              onClick={() => setStartGameDialogOpen(false)}
-            >
-              Отмена
-            </Button>
-            <Button
-              onClick={() => startGameMutation.mutate(playerNames)}
-              disabled={startGameMutation.isPending}
-              className="bg-emerald-600 hover:bg-emerald-500 font-semibold"
-            >
-              Запустить игру
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      <StartGameDialog 
+        open={startGameDialogOpen} 
+        onOpenChange={setStartGameDialogOpen} 
+        laneId={laneId} 
+      />
     </div>
   );
 }

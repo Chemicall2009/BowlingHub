@@ -2,8 +2,11 @@ import { apiClient } from "./client";
 import type { Game, PlayerScore } from "./types";
 
 export interface CreateGamePayload {
-  lane_id: number;
+  lane_ids: number[];
   players: string[];
+  tariff: string;
+  durationMinutes: number;
+  isPrepaid: boolean;
 }
 
 export interface RecordShotPayload {

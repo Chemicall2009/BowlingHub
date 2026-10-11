@@ -21,6 +21,7 @@ const Emulator = lazy(() => import("./pages/Emulator").then((m) => ({ default: m
 const Sniffer = lazy(() => import("./pages/Sniffer").then((m) => ({ default: m.Sniffer })));
 const Settings = lazy(() => import("./pages/Settings").then((m) => ({ default: m.Settings })));
 const Logs = lazy(() => import("./pages/Logs").then((m) => ({ default: m.Logs })));
+const TvDisplay = lazy(() => import("./pages/TvDisplay").then((m) => ({ default: m.TvDisplay })));
 
 function GlobalEventHooksLoader() {
   useConnectionEvents();
@@ -116,6 +117,26 @@ export default function App() {
                   />
                   <Route path="*" element={<NotFound />} />
                 </Route>
+                <Route
+                  path="/tv"
+                  element={
+                    <ErrorBoundary fallbackTitle="Ошибка TV-панели">
+                      <Suspense fallback={<PageLoader />}>
+                        <TvDisplay />
+                      </Suspense>
+                    </ErrorBoundary>
+                  }
+                />
+                <Route
+                  path="/tv/:laneId"
+                  element={
+                    <ErrorBoundary fallbackTitle="Ошибка TV-панели">
+                      <Suspense fallback={<PageLoader />}>
+                        <TvDisplay />
+                      </Suspense>
+                    </ErrorBoundary>
+                  }
+                />
               </Routes>
             </ErrorBoundary>
           </BrowserRouter>

@@ -33,10 +33,21 @@ async function request<T>(
     ? { ...options.headers }
     : { "Content-Type": "application/json", ...options.headers };
 
-  const response = await fetch(url, {
-    ...options,
-    headers,
-  });
+  let response: Response;
+  try {
+    response = await fetch(url, {
+      ...options,
+      headers,
+    });
+  } catch (err) {
+    throw new ApiError(503, {
+      type: "about:blank",
+      title: "Ошибка соединения с сервером",
+      status: 503,
+      detail: "Не удалось подключиться к бэкенду. Проверьте запуск сервера FastAPI или настройки сети.",
+      instance: endpoint,
+    });
+  }
 
   if (!response.ok) {
     let problem: ProblemDetails;

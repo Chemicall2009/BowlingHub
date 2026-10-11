@@ -35,7 +35,14 @@ export function Calibration() {
   const [editingMetadataProfile, setEditingMetadataProfile] =
     useState<CalibrationProfile | null>(null);
 
-  const { data: profiles = [], isLoading } = useCalibrationProfiles();
+  const { data: rawProfiles, isLoading } = useCalibrationProfiles();
+  const profiles: CalibrationProfile[] = Array.isArray(rawProfiles)
+    ? rawProfiles
+    : Array.isArray((rawProfiles as any)?.items)
+    ? (rawProfiles as any).items
+    : Array.isArray((rawProfiles as any)?.data)
+    ? (rawProfiles as any).data
+    : [];
   const activateMutation = useActivateProfile();
   const deleteMutation = useDeleteProfile();
   const createMutation = useCreateProfile();

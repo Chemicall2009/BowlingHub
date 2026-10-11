@@ -1,0 +1,6 @@
+CAMERA_PREFIX = "camera"
+def status_topic(camera_id): return f"camera/{camera_id}/status"
+def cmd_topic(camera_id): return f"camera/{camera_id}/cmd"
+def result_topic(camera_id): return f"camera/{camera_id}/result"
+def snapshot_topic(camera_id): return f"camera/{camera_id}/snapshot"
+def events_topic(camera_id): return f"camera/{camera_id}/events"

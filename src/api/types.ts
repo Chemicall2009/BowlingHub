@@ -24,8 +24,7 @@ export interface CurrentGameSummary {
   id: string;
   player_name: string;
   score: number;
-  frame: number;
-  current_frame?: number;
+  current_frame: number;
   balls_left?: number;
 }
 

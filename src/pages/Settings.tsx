@@ -7,7 +7,7 @@ import React, { useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useForm, FormProvider } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Settings as SettingsIcon, Save, RotateCcw, Sliders, Shield, LayoutGrid, Bell, Info } from "lucide-react";
+import { Settings as SettingsIcon, Save, RotateCcw, Sliders, Shield, LayoutGrid, Bell, Info, FlaskConical } from "lucide-react";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "../components/ui/tabs";
 import { Button } from "../components/ui/button";
 import { getSettings, updateSettings } from "../api/settings";
@@ -19,6 +19,8 @@ import { ProtocolTab } from "../components/settings/ProtocolTab";
 import { LanesTab } from "../components/settings/LanesTab";
 import { NotificationsTab } from "../components/settings/NotificationsTab";
 import { AboutTab } from "../components/settings/AboutTab";
+import { ModeSettings } from "../components/settings/ModeSettings";
+import { SimulationConfigCard } from "../components/emulation/SimulationConfigCard";
 import { toast } from "sonner";
 
 export function Settings() {
@@ -136,7 +138,10 @@ export function Settings() {
 
         <div className="flex-1 overflow-y-auto p-6 pb-24">
           <Tabs value={activeTab} onValueChange={(val) => setActiveTab(val as any)} className="max-w-5xl mx-auto flex flex-col gap-6">
-            <TabsList className="bg-zinc-900 border border-zinc-800 p-1 h-auto grid grid-cols-2 sm:grid-cols-5 gap-1">
+            <TabsList className="bg-zinc-900 border border-zinc-800 p-1 h-auto grid grid-cols-2 sm:grid-cols-6 gap-1">
+              <TabsTrigger value="mode" className="gap-2 text-xs py-2 data-[state=active]:bg-zinc-800 data-[state=active]:text-white">
+                <FlaskConical className="h-3.5 w-3.5" /> Режим
+              </TabsTrigger>
               <TabsTrigger value="transport" className="gap-2 text-xs py-2 data-[state=active]:bg-zinc-800 data-[state=active]:text-white">
                 <Sliders className="h-3.5 w-3.5" /> Транспорт
               </TabsTrigger>
@@ -154,6 +159,10 @@ export function Settings() {
               </TabsTrigger>
             </TabsList>
 
+            <TabsContent value="mode">
+              <ModeSettings />
+              <SimulationConfigCard />
+            </TabsContent>
             <TabsContent value="transport">
               <TransportTab />
             </TabsContent>

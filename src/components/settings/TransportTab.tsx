@@ -136,7 +136,7 @@ export function TransportTab() {
 
       {/* Параметры выбранного транспорта */}
       <div className="bg-zinc-900 border border-zinc-800 p-5 rounded-xl flex flex-col gap-4">
-        <h3 className="text-sm font-bold text-white">Параметры соединения ({transport.toUpperCase()})</h3>
+        <h3 className="text-sm font-bold text-white">Параметры соединения ({(transport || "serial").toUpperCase()})</h3>
 
         {transport === "serial" && (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

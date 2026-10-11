@@ -221,6 +221,7 @@ export const calibrationHandlers = [
     const newProfile: CalibrationProfile = {
       id: newId,
       lane_id: Number(body.lane_id) || 1,
+      camera_id: body.camera_id || `cam-lane-${Number(body.lane_id) || 1}`,
       camera_type: body.camera_type || "tvision",
       polygon_roi: body.polygon_roi?.length === 4 ? body.polygon_roi : [...DEFAULT_ROI_640x480],
       pin_positions:

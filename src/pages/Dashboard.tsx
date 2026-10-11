@@ -21,8 +21,11 @@ import { ConfirmDialog } from "../components/common/ConfirmDialog";
 import { SystemHealth } from "../components/dashboard/SystemHealth";
 import type { Lane } from "../api/types";
 import { useLaneStatusEvents, useGameEvents } from "../ws/hooks";
+import { useOperationMode } from "../stores/operationMode";
+import { EmulationControls } from "../components/emulation/EmulationControls";
 
 export function Dashboard() {
+  const mode = useOperationMode((s) => s.mode);
   const queryClient = useQueryClient();
   const { viewMode, setViewMode, filter, setFilter, searchQuery, setSearchQuery } =
     useUIStore();
@@ -42,11 +45,6 @@ export function Dashboard() {
       queryClient.invalidateQueries({ queryKey: ["lanes"] });
     }
   }, [lastEvent, queryClient]);
-
-  // Invalidate lanes when settings change
-  useEffect(() => {
-    queryClient.invalidateQueries({ queryKey: ["lanes"] });
-  }, [settings, queryClient]);
 
   useGameEvents();
 
@@ -134,7 +132,9 @@ export function Dashboard() {
         </div>
 
         {/* Global Action Buttons */}
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 flex-wrap">
+          {mode === "emulation" && <EmulationControls />}
+
           <Button
             variant="outline"
             size="sm"

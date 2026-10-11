@@ -16,6 +16,7 @@ import {
   Gauge,
   ArrowLeftRight,
   User,
+  MonitorPlay,
 } from "lucide-react";
 import type { MockLane } from "../../mocks/data/lanes";
 import { formatLaneNumber } from "../../lib/format";
@@ -26,6 +27,7 @@ import { useResetLane, useUpdateLaneOptions } from "../../api/lanes";
 import { Card, CardContent } from "../ui/card";
 import { Button } from "../ui/button";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "../ui/tooltip";
+import { LaneThrowButton } from "../emulation/LaneThrowButton";
 
 interface LaneCardProps {
   lane: MockLane;
@@ -86,7 +88,21 @@ export function LaneCard({ lane, onLaneUpdated }: LaneCardProps) {
             <span className="text-2xl font-bold font-mono tracking-tight text-white group-hover:text-emerald-400 transition-colors">
               {formatLaneNumber(lane.id)}
             </span>
-            <LaneStatusBadge status={lane.status} />
+            <div className="flex items-center gap-2">
+              <Button
+                variant="ghost"
+                size="iconSm"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  window.open(`/tv/${lane.id}`, "_blank");
+                }}
+                className="text-zinc-400 hover:text-white h-7 w-7"
+                title="Открыть TV-панель"
+              >
+                <MonitorPlay className="h-4 w-4 text-teal-400" />
+              </Button>
+              <LaneStatusBadge status={lane.status} />
+            </div>
           </div>
 
           {/* Средняя зона */}
@@ -103,7 +119,7 @@ export function LaneCard({ lane, onLaneUpdated }: LaneCardProps) {
                     </div>
                     <div className="flex items-baseline justify-between">
                       <span className="text-xs text-zinc-500 font-mono">
-                        Фрейм {lane.current_game.frame}/10
+                        Фрейм {lane.current_game.current_frame}/10
                       </span>
                       <span className="text-xl font-bold font-mono text-emerald-400">
                         {lane.current_game.score}
@@ -169,6 +185,8 @@ export function LaneCard({ lane, onLaneUpdated }: LaneCardProps) {
           <div className="p-3 bg-zinc-950/80 border-t border-zinc-800/60 flex items-center justify-between">
             <TooltipProvider>
               <div className="flex items-center gap-1.5">
+                <LaneThrowButton laneId={lane.id} />
+
                 {/* RotateCcw -> сброс с диалогом */}
                 <Tooltip>
                   <TooltipTrigger asChild>

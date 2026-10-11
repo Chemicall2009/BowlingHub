@@ -243,7 +243,7 @@ export const laneHandlers = [
     const shotBody = (await request.json().catch(() => ({}))) as Partial<MockShot>;
     const newShot: MockShot = {
       id: `shot-${Date.now()}`,
-      frame: shotBody.frame || (lane.current_game?.frame ?? 1),
+      frame: shotBody.frame || (lane.current_game?.current_frame ?? 1),
       shot: shotBody.shot || 1,
       pins_down: shotBody.pins_down ?? 0,
       pins_state: shotBody.pins_state || lane.pins,

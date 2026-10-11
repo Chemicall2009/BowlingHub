@@ -40,7 +40,7 @@ export type MockLane = {
     id: string;
     player_name: string;
     score: number;
-    frame: number; // 1..10
+    current_frame: number; // 1..10
   } | null;
   shots: MockShot[];
 };
@@ -172,7 +172,7 @@ function createInitialMockLanes(): MockLane[] {
         id: "game-lane-6",
         player_name: "Алексей",
         score: 0,
-        frame: 1,
+        current_frame: 1,
       },
       shots: [
         {
@@ -211,7 +211,7 @@ function createInitialMockLanes(): MockLane[] {
         id: "game-lane-7",
         player_name: "Мария",
         score: 87,
-        frame: 5,
+        current_frame: 5,
       },
       shots: [
         {
@@ -312,7 +312,7 @@ function createInitialMockLanes(): MockLane[] {
         id: "game-lane-8",
         player_name: "Дмитрий",
         score: 178,
-        frame: 9,
+        current_frame: 9,
       },
       shots: [
         {

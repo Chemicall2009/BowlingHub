@@ -31,12 +31,53 @@ let currentSettings: Settings = {
   },
 };
 
+let currentMode: "emulation" | "combat" = "emulation";
+
 async function randomNetworkDelay(): Promise<void> {
   const ms = Math.floor(Math.random() * 120) + 80;
   await delay(ms);
 }
 
 export const settingsHandlers = [
+  // GET /api/settings/mode
+  http.get("/api/settings/mode", async () => {
+    await randomNetworkDelay();
+    return HttpResponse.json({
+      mode: currentMode,
+      available_modes: ["emulation", "combat"],
+      can_switch_to: {
+        emulation: currentMode === "combat",
+        combat: currentMode === "emulation",
+      },
+    });
+  }),
+
+  // POST /api/settings/mode
+  http.post("/api/settings/mode", async ({ request }) => {
+    await randomNetworkDelay();
+    const body = (await request.json()) as { mode: "emulation" | "combat"; confirm_token: string };
+    if (body.confirm_token !== body.mode.toUpperCase()) {
+      return HttpResponse.json(
+        {
+          type: "about:blank",
+          title: "Invalid confirm token",
+          status: 400,
+          detail: `Ожидается ввод "${body.mode.toUpperCase()}"`,
+        },
+        { status: 400 }
+      );
+    }
+    currentMode = body.mode;
+    return HttpResponse.json({
+      mode: currentMode,
+      available_modes: ["emulation", "combat"],
+      can_switch_to: {
+        emulation: currentMode === "combat",
+        combat: currentMode === "emulation",
+      },
+    });
+  }),
+
   // GET /api/settings
   http.get("/api/settings", async () => {
     await randomNetworkDelay();

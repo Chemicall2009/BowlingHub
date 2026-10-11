@@ -1,0 +1,39 @@
+backend/
+├── app/
+│   ├── __init__.py
+│   ├── main.py
+│   ├── config.py
+│   ├── db.py
+│   ├── logging_config.py
+│   ├── models/
+│   │   ├── __init__.py
+│   │   ├── lane.py
+│   │   ├── game.py
+│   │   ├── player.py
+│   │   ├── shot.py
+│   │   ├── camera.py
+│   │   ├── snapshot.py
+│   │   ├── calibration.py
+│   │   ├── command_log.py
+│   │   ├── mqtt_log.py
+│   │   └── settings.py
+│   ├── schemas/ (to be added)
+│   ├── mqtt/ (to be added)
+│   ├── lcom/ (to be added)
+│   ├── transport/ (to be added)
+│   ├── services/ (to be added)
+│   ├── api/ (to be added)
+│   └── ws/ (to be added)
+├── tests/
+├── static/
+│   └── snapshots/
+├── alembic/
+│   ├── env.py
+│   └── versions/
+│       └── 0001_initial.py
+├── alembic.ini
+├── pyproject.toml
+├── requirements.txt
+├── .env.example
+├── Dockerfile
+└── README.md

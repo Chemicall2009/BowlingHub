@@ -7,6 +7,7 @@ import { createRoot } from "react-dom/client";
 import App from "./App";
 import "./index.css";
 import { worker } from "./mocks/browser";
+import { initSimulation } from "./mocks/simulation/initSimulation";
 
 async function enableMocking(): Promise<void> {
   if (!import.meta.env.DEV) return;
@@ -30,5 +31,6 @@ async function enableMocking(): Promise<void> {
 }
 
 enableMocking().then(() => {
+  initSimulation();
   createRoot(document.getElementById("root")!).render(<App />);
 });

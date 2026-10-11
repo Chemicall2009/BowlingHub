@@ -5,6 +5,52 @@
 
 import { apiClient } from "./client";
 import type { Settings } from "./types";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { apiGet, apiPost } from "./client";
+import { toast } from "sonner";
+import { useOperationMode, type OperationMode } from "../stores/operationMode";
+
+export type { OperationMode };
+
+export type ModeInfo = {
+  mode: OperationMode;
+  available_modes: OperationMode[];
+  can_switch_to: {
+    emulation: boolean;
+    combat: boolean;
+  };
+};
+
+export type ModeSwitchDto = {
+  mode: OperationMode;
+  confirm_token: string;
+};
+
+export function useOperationModeInfo() {
+  return useQuery({
+    queryKey: ["settings", "mode"],
+    queryFn: () => apiGet<ModeInfo>("/settings/mode"),
+  });
+}
+
+export function useSwitchOperationMode() {
+  const qc = useQueryClient();
+  const setLocalMode = useOperationMode((s) => s.setMode);
+  return useMutation({
+    mutationFn: (dto: ModeSwitchDto) =>
+      apiPost<ModeInfo>("/settings/mode", dto),
+    onSuccess: (data) => {
+      setLocalMode(data.mode);
+      qc.invalidateQueries({ queryKey: ["settings"] });
+      qc.invalidateQueries({ queryKey: ["lanes"] });
+      qc.invalidateQueries({ queryKey: ["cameras"] });
+      toast.success(`Режим: ${data.mode === "combat" ? "Боевой" : "Эмуляция"}`);
+    },
+    onError: (err) => {
+      toast.error(`Не удалось переключить режим: ${err}`);
+    },
+  });
+}
 
 export async function getSettings(): Promise<Settings> {
   return apiClient<Settings>("/settings");
