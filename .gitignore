@@ -1,0 +1,50 @@
+# Dependencies
+node_modules/
+.pnpm-store/
+bun.lock
+bun.lockb
+package-lock.json
+yarn.lock
+
+# Build
+dist/
+build/
+.vite/
+.vite-temp/
+
+# Env
+.env
+.env.local
+.env.*.local
+
+# IDE
+.vscode/*
+!.vscode/extensions.json
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+npm-debug.log*
+pnpm-debug.log*
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+*.egg-info/
+
+# Firmware build artifacts
+firmware/**/.pio/
+firmware/**/.pioenvs/
+firmware/**/.piolibdeps/
+firmware/**/build/
+
+# AI Studio metadata
+metadata.json
