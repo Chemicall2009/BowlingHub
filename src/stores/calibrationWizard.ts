@@ -10,6 +10,7 @@ import type { CalibrationCameraType, Point } from "../api/calibration";
 export interface WizardState {
   step: 1 | 2 | 3 | 4;
   laneId: number | null;
+  cameraId: string | null;
   cameraType: CalibrationCameraType;
   snapshotUrl: string | null;
   pinPositions: Point[] | null;
@@ -19,6 +20,7 @@ export interface WizardState {
 
   setStep: (step: 1 | 2 | 3 | 4) => void;
   setLane: (laneId: number | null) => void;
+  setCameraId: (cameraId: string | null) => void;
   setCameraType: (cameraType: CalibrationCameraType) => void;
   setSnapshot: (url: string | null) => void;
   setPinPositions: (pins: Point[] | null) => void;
@@ -52,6 +54,7 @@ export const useCalibrationWizardStore = create<WizardState>()(
     (set, get) => ({
       step: 1,
       laneId: 1,
+      cameraId: null,
       cameraType: "tvision",
       snapshotUrl: null,
       pinPositions: [...DEFAULT_PINS_640x480],
@@ -61,6 +64,7 @@ export const useCalibrationWizardStore = create<WizardState>()(
 
       setStep: (step) => set({ step }),
       setLane: (laneId) => set({ laneId }),
+      setCameraId: (cameraId) => set({ cameraId }),
       setCameraType: (cameraType) => set({ cameraType }),
       setSnapshot: (url) => {
         const oldUrl = get().snapshotUrl;
@@ -90,6 +94,7 @@ export const useCalibrationWizardStore = create<WizardState>()(
         set({
           step: 1,
           laneId: 1,
+          cameraId: null,
           cameraType: "tvision",
           snapshotUrl: null,
           pinPositions: [...DEFAULT_PINS_640x480],

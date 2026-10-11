@@ -33,6 +33,7 @@ import {
 } from "../../api/calibration";
 import { useCalibrationWizardStore } from "../../stores/calibrationWizard";
 import { CameraTypeSelect } from "./CameraTypeSelect";
+import { CameraSelect } from "./CameraSelect";
 import { CalibrationCanvas } from "./CalibrationCanvas";
 import { PinPositionList, getStandardPinLayout } from "./PinPositionList";
 import { RoiEditor } from "./RoiEditor";
@@ -203,6 +204,7 @@ export function CalibrationWizard({
           id: wizard.profileId,
           dto: {
             lane_id: laneId,
+            camera_id: wizard.cameraId || undefined,
             camera_type: wizard.cameraType,
             pin_positions: pinPositions,
             polygon_roi: polygonRoi,
@@ -213,6 +215,7 @@ export function CalibrationWizard({
       } else {
         await createMutation.mutateAsync({
           lane_id: laneId,
+          camera_id: wizard.cameraId || undefined,
           camera_type: wizard.cameraType,
           pin_positions: pinPositions,
           polygon_roi: polygonRoi,
@@ -309,6 +312,12 @@ export function CalibrationWizard({
                 </span>
               </div>
             </div>
+
+            {/* Выбор физической камеры */}
+            <CameraSelect
+              value={wizard.cameraId || undefined}
+              onChange={wizard.setCameraId}
+            />
 
             {/* Выбор типа камеры */}
             <div className="space-y-2">

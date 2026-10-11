@@ -141,6 +141,7 @@ export const calibrationProfilesStore = new Map<string, CalibrationProfile>([
     {
       id: "prof-lane-6",
       lane_id: 6,
+      camera_id: "tvision-1",
       camera_type: "tvision",
       polygon_roi: [...DEFAULT_ROI_640x480],
       pin_positions: [...DEFAULT_PINS_640x480],
@@ -156,6 +157,7 @@ export const calibrationProfilesStore = new Map<string, CalibrationProfile>([
     {
       id: "prof-lane-8",
       lane_id: 8,
+      camera_id: "pin-deck-1",
       camera_type: "pin_deck",
       polygon_roi: [...DEFAULT_ROI_640x480],
       pin_positions: [...DEFAULT_PINS_640x480],

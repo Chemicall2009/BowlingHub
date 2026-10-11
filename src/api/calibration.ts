@@ -18,6 +18,7 @@ export type Point = {
 export type CalibrationProfile = {
   id: string;
   lane_id: number;
+  camera_id?: string;
   camera_type: CalibrationCameraType;
   polygon_roi: Point[]; // 4 точки (произвольная форма)
   pin_positions: Point[]; // ровно 10 точек
